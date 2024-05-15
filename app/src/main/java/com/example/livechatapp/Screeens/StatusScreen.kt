@@ -57,7 +57,7 @@ fun StatusScreen(navController: NavController, vm: LCViewModel) {
         Scaffold(
             floatingActionButton = {
                 FAB {
-                    launcher.launch("image/")
+                    launcher.launch("image/s")
                 }
             }, content = {
                 Column(

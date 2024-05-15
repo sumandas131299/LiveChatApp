@@ -34,11 +34,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.HistoricalChange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.livechatapp.CommonDivider
 import com.example.livechatapp.CommonImage
 import com.example.livechatapp.Data.Message
 import com.example.livechatapp.LCViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun SingleChatScreen(navController: NavHostController, vm: LCViewModel, chatId: String) {
@@ -73,7 +77,7 @@ fun SingleChatScreen(navController: NavHostController, vm: LCViewModel, chatId: 
 
 
         }
-        MessageBox(modifier = Modifier.weight(1f), chatMessage =chatMessages.value , currentUserId = myUser?.userId?:"" )
+        MessageBox(modifier = Modifier.weight(1f), chatMessages =chatMessages.value , currentUserId = myUser?.userId?:"" )
         ReplyBox(reply = reply, onReplyChange = { reply = it }, onSendReply = onSendReply)
     }
 
@@ -81,20 +85,35 @@ fun SingleChatScreen(navController: NavHostController, vm: LCViewModel, chatId: 
 }
 
 @Composable
-fun MessageBox(modifier: Modifier,chatMessage: List<Message> , currentUserId : String){
-    LazyColumn (modifier = Modifier) {
-        items(chatMessage){
+fun MessageBox(modifier: Modifier, chatMessages: List<Message>, currentUserId: String) {
+    LazyColumn(modifier = modifier) {
+        items(chatMessages) { msg ->
+            val alignment = if (msg.sendBy == currentUserId) Alignment.End else Alignment.Start
+            val color = if (msg.sendBy == currentUserId) Color(0xFF68C400) else Color(0xFFC0C0C0)
 
-                msg->
-            val alignment = if(msg.sendBy==currentUserId) Alignment.End else Alignment.Start
-            val color  = if(msg.sendBy==currentUserId)   Color(0xFF68C400) else Color(0xFFC0C0C0)
-
-            Column(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalAlignment = alignment)
-            {
-                Text(text = msg.message ?: "",
-                    modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(color).padding(12.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalAlignment = alignment
+            ) {
+                Text(
+                    text = msg.message ?: "",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(color)
+                        .padding(12.dp),
                     color = Color.White,
                     fontWeight = FontWeight.Bold
+                )
+
+                // Add real-time display of message time
+                val messageTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(msg.timestamp))
+                Text(
+                    text = messageTime,
+                    modifier = Modifier.padding(start = 8.dp, top = 4.dp),
+                    color = Color.Gray,
+                    fontSize = 12.sp
                 )
             }
         }

@@ -10,9 +10,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.livechatapp.Screeens.ChatListScreen
 import com.example.livechatapp.Screeens.LoginScreen
 import com.example.livechatapp.Screeens.ProfileScreen
@@ -81,9 +83,13 @@ class MainActivity : ComponentActivity() {
             composable(DestinationScreen.StatusList.route){
                 StatusScreen(navController, vm)
             }
-            composable(DestinationScreen.SingleStatus.route){
+            composable(DestinationScreen.SingleStatus.route, arguments = listOf(navArgument("userId") {
+                type = NavType.StringType
+            })) {
                 val userId = it.arguments?.getString("userId")
-                userId?.let {  SingleStatusScreen(navController, vm , it) }
+                userId?.let {
+                    SingleStatusScreen(navController = navController, vm = vm, userId = it)
+                }
             }
             composable(DestinationScreen.Profile.route){
                 ProfileScreen(navController, vm)

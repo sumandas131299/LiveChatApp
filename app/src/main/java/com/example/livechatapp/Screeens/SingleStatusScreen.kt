@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.livechatapp.CommonImage
 import com.example.livechatapp.LCViewModel
@@ -31,12 +32,12 @@ enum class State {
 
 
 @Composable
-fun SingleStatusScreen(navController: NavHostController, vm: LCViewModel, userId: String) {
+fun SingleStatusScreen(navController: NavController, vm: LCViewModel, userId: String) {
     val statuses = vm.status.value.filter {
         it.user.userId == userId
     }
 
-    if (statuses.isEmpty()) {
+    if (statuses.isNotEmpty()) {
         val currentStatus = remember {
             mutableStateOf(0)
         }
@@ -70,7 +71,7 @@ fun SingleStatusScreen(navController: NavHostController, vm: LCViewModel, userId
 }
 
 @Composable
-fun CustomProgressIndicator(modifier: Modifier, state: State, onComplete: () -> Unit) {
+fun CustomProgressIndicator(modifier: Modifier , state: State, onComplete: () -> Unit) {
 
     var Process = if (state == State.INITIAL) 0f else 1f
 
@@ -88,5 +89,5 @@ fun CustomProgressIndicator(modifier: Modifier, state: State, onComplete: () -> 
         Process = p
 
     }
-    LinearProgressIndicator(modifier = Modifier, color = Color.Red, progress = Process)
+    LinearProgressIndicator(modifier=modifier, color = Color.Red, progress = Process)
 }

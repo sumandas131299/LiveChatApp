@@ -302,25 +302,31 @@ class LCViewModel @Inject constructor(
     }
 
     fun uploadStatus(uri: Uri) {
-        uploadImage(uri){
-
-            createStatus(it.toString())
+        uploadImage(uri) { imageUrl ->
+            if (imageUrl != null) {
+                createStatus(imageUrl)
+            } else {
+                handleException(customMessage = "Failed to upload image for status")
+            }
         }
     }
-    fun createStatus(imageurl: String?){
-        val newStatus =Status(
-            ChatUser(
-                userData.value?.userId,
-                userData.value?.name,
-                userData.value?.imageUrl,
-                userData.value?.number,
-
-            ),
-            imageurl,
-            System.currentTimeMillis()
-        )
-
-        db.collection(STATUS).document().set(newStatus)
+    fun createStatus(imageUrl: Uri) {
+        val currentUserData = userData.value
+        if (currentUserData != null) {
+            val newStatus = Status(
+                user = ChatUser(
+                    currentUserData.userId,
+                    currentUserData.name,
+                    currentUserData.imageUrl,
+                    currentUserData.number
+                ), imageUrl = imageUrl.toString(), timestamp = System.currentTimeMillis()
+            )
+            db.collection(STATUS).add(newStatus).addOnFailureListener {
+                handleException(it)
+            }
+        } else {
+            handleException(customMessage = "User data is null")
+        }
     }
 
     fun populateStatuses(){
